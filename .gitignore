@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment variables
+.env
+
+# Distribution
+dist/
+
+# Runtime artifacts
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Windows/
