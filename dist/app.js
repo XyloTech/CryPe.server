@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const helmet_1 = __importDefault(require("helmet"));
 const cors_1 = __importDefault(require("cors"));
 const user_1 = __importDefault(require("./routes/user"));
+const wallet_1 = __importDefault(require("./routes/wallet"));
 const settle_1 = __importDefault(require("./routes/settle"));
 const liquidity_1 = __importDefault(require("./routes/liquidity"));
 const error_1 = __importDefault(require("./middleware/error"));
@@ -16,6 +17,7 @@ app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({ origin: process.env.CORS_ORIGIN || "http://localhost:3000" }));
 app.use(express_1.default.json({ limit: "10kb" }));
 app.use("/v1/user", user_1.default);
+app.use("/v1/wallet", wallet_1.default);
 app.use("/v1/settle", settle_1.default);
 app.use("/v1/liquidity", liquidity_1.default);
 app.get("/health", (_req, res) => {

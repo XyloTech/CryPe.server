@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-interface User {
+export interface User {
   id: string;
   wallet_address: string;
   kyc_level: "pending" | "verified" | "rejected";
@@ -13,6 +13,13 @@ const users: Map<string, User> = new Map();
 
 export default class UserService {
   async registerUser(walletAddress: string): Promise<User> {
+    const normalizedAddress = walletAddress.toLowerCase();
+    for (const user of users.values()) {
+      if (user.wallet_address.toLowerCase() === normalizedAddress) {
+        return user;
+      }
+    }
+
     const id = uuidv4();
     const user: User = {
       id,
@@ -26,10 +33,20 @@ export default class UserService {
     return user;
   }
 
+  async getUserByWallet(walletAddress: string): Promise<User | null> {
+    const normalizedAddress = walletAddress.toLowerCase();
+    for (const user of users.values()) {
+      if (user.wallet_address.toLowerCase() === normalizedAddress) {
+        return user;
+      }
+    }
+    return null;
+  }
+
   async verifyKYC(
     userId: string,
-    _biometricData: any,
-    _documents: any
+    _biometricData?: any,
+    _documents?: any
   ): Promise<{ kyc_level: string; kyc_status: string; limits: { max: number } }> {
     const user = users.get(userId);
     if (!user) {

@@ -1,33 +1,10 @@
 import "dotenv/config";
-import helmet from "helmet";
-import cors from "cors";
-import express, { Request, NextFunction } from "express";
-import userRoutes from "./routes/user";
-import settleRoutes from "./routes/settle";
-import liquidityRoutes from "./routes/liquidity";
+import { Request, Response, NextFunction } from "express";
 import { Pool } from "pg";
 import { createClient } from "redis";
-import errorMiddleware from "./middleware/error";
+import app from "./app";
 
 async function startServer() {
-  const app = express();
-
-  app.use(helmet());
-  app.use(
-    cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000" })
-  );
-  app.use(express.json({ limit: "10kb" }));
-
-  app.use("/v1/user", userRoutes);
-  app.use("/v1/settle", settleRoutes);
-  app.use("/v1/liquidity", liquidityRoutes);
-
-  app.get("/health", (_req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
-  });
-
-  app.use(errorMiddleware);
-
   const port = process.env.PORT || 3000;
 
   // Database connection (optional for prototype)
@@ -42,7 +19,7 @@ async function startServer() {
     });
     await pgPool.connect();
     console.log("✅ Connected to PostgreSQL");
-  } catch (err) {
+  } catch (_err) {
     console.warn("⚠️ PostgreSQL connection failed, running without DB");
     pgPool = { connect: async () => {}, end: async () => {} };
   }
@@ -57,14 +34,14 @@ async function startServer() {
       },
     });
     await redis.connect();
-    console.log("✀ Connected to Redis");
-  } catch (err) {
+    console.log("✅ Connected to Redis");
+  } catch (_err) {
     console.warn("⚠️ Redis connection failed, running without cache");
     redis = { connect: async () => {}, disconnect: async () => {}, on: () => {} };
   }
 
   // Make db and redis available to routes via request
-  app.use((req: Request, _res, next: NextFunction) => {
+  app.use((req: Request, _res: Response, next: NextFunction) => {
     (req as any)["pgPool"] = pgPool;
     (req as any)["redis"] = redis;
     next();

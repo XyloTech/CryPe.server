@@ -9,12 +9,39 @@ const router = (0, express_1.Router)();
 const service = new userService_1.default();
 router.post("/register", async (req, res) => {
     try {
-        const { walletAddress } = req.body;
-        if (!walletAddress) {
+        const { walletAddress, address } = req.body;
+        const targetAddress = walletAddress || address;
+        if (!targetAddress) {
             return res.status(400).json({ error: "Wallet address required" });
         }
-        const user = await service.registerUser(walletAddress);
+        const user = await service.registerUser(targetAddress);
         res.status(201).json(user);
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+router.post("/wallet/register", async (req, res) => {
+    try {
+        const { address, walletAddress, chainId, method, timestamp } = req.body;
+        const targetAddress = address || walletAddress;
+        if (!targetAddress) {
+            return res.status(400).json({ error: "Wallet address required" });
+        }
+        const user = await service.registerUser(targetAddress);
+        res.json({
+            success: true,
+            userId: user.id,
+            walletAddress: user.wallet_address,
+            address: user.wallet_address,
+            kycLevel: user.kyc_level,
+            kycStatus: user.kyc_status,
+            spendingLimit: user.spending_limit,
+            chainId,
+            method,
+            timestamp,
+            user,
+        });
     }
     catch (error) {
         res.status(500).json({ error: error.message });

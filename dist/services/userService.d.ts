@@ -1,4 +1,4 @@
-interface User {
+export interface User {
     id: string;
     wallet_address: string;
     kyc_level: "pending" | "verified" | "rejected";
@@ -8,7 +8,8 @@ interface User {
 }
 export default class UserService {
     registerUser(walletAddress: string): Promise<User>;
-    verifyKYC(userId: string, _biometricData: any, _documents: any): Promise<{
+    getUserByWallet(walletAddress: string): Promise<User | null>;
+    verifyKYC(userId: string, _biometricData?: any, _documents?: any): Promise<{
         kyc_level: string;
         kyc_status: string;
         limits: {
@@ -22,4 +23,3 @@ export default class UserService {
         wallet_address: string;
     }>;
 }
-export {};

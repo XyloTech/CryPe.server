@@ -4,6 +4,12 @@ const uuid_1 = require("uuid");
 const users = new Map();
 class UserService {
     async registerUser(walletAddress) {
+        const normalizedAddress = walletAddress.toLowerCase();
+        for (const user of users.values()) {
+            if (user.wallet_address.toLowerCase() === normalizedAddress) {
+                return user;
+            }
+        }
         const id = (0, uuid_1.v4)();
         const user = {
             id,
@@ -15,6 +21,15 @@ class UserService {
         };
         users.set(id, user);
         return user;
+    }
+    async getUserByWallet(walletAddress) {
+        const normalizedAddress = walletAddress.toLowerCase();
+        for (const user of users.values()) {
+            if (user.wallet_address.toLowerCase() === normalizedAddress) {
+                return user;
+            }
+        }
+        return null;
     }
     async verifyKYC(userId, _biometricData, _documents) {
         const user = users.get(userId);
