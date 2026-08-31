@@ -4,6 +4,18 @@ import userService from "../services/userService";
 const router = Router();
 const service = new userService();
 
+router.get("/list", async (_req: Request, res: Response) => {
+  try {
+    const [users, stats] = await Promise.all([
+      service.getAllUsers(),
+      service.getDashboardStats(),
+    ]);
+    res.json({ users, stats });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/register", async (req: Request, res: Response) => {
   try {
     const { address, walletAddress, chainId, method, timestamp } = req.body;

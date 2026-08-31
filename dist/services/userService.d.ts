@@ -6,9 +6,21 @@ export interface User {
     spending_limit: number;
     created_at: string;
 }
+export interface DashboardStats {
+    totalUsers: number;
+    verifiedUsers: number;
+    pendingUsers: number;
+    rejectedUsers: number;
+    totalSpendingLimit: number;
+    recentRegistrations: number;
+}
 export default class UserService {
     registerUser(walletAddress: string): Promise<User>;
     getUserByWallet(walletAddress: string): Promise<User | null>;
+    getAllUsers(): Promise<User[]>;
+    updateUser(userId: string, updates: Partial<Pick<User, "kyc_level" | "kyc_status" | "spending_limit">>): Promise<User>;
+    deleteUser(userId: string): Promise<boolean>;
+    getDashboardStats(): Promise<DashboardStats>;
     verifyKYC(userId: string, _biometricData?: any, _documents?: any): Promise<{
         kyc_level: string;
         kyc_status: string;

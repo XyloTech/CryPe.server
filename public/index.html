@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryPe • Wallet & User Analytics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Background Glows -->
+  <div class="glow-sphere glow-1"></div>
+  <div class="glow-sphere glow-2"></div>
+
+  <div class="app-container">
+    <!-- Navigation / Top Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-box">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+            <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">CryPe<span>.server</span></div>
+          <div class="brand-subtitle">Decentralized Instant Settlement Infrastructure</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="live-pill" id="live-indicator">
+          <span class="pulse-dot"></span>
+          <span class="live-text">Live Sync Active</span>
+        </div>
+
+        <button class="btn btn-secondary btn-icon" id="btn-refresh" title="Refresh Data">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          <span>Refresh</span>
+        </button>
+
+        <button class="btn btn-primary" id="btn-open-register">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>Register Wallet</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Metrics Cards Grid -->
+    <section class="metrics-grid">
+      <div class="metric-card card-glow-cyan">
+        <div class="metric-header">
+          <span class="metric-title">Total Wallets</span>
+          <div class="metric-icon-box cyan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
+              <path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/>
+              <circle cx="18" cy="14" r="1"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value" id="stat-total-users">0</div>
+        <div class="metric-footer text-muted">
+          <span class="badge badge-cyan" id="stat-recent">0 new</span> in last 24h
+        </div>
+      </div>
+
+      <div class="metric-card card-glow-emerald">
+        <div class="metric-header">
+          <span class="metric-title">Verified Users</span>
+          <div class="metric-icon-box emerald">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value text-emerald" id="stat-verified-users">0</div>
+        <div class="metric-footer text-muted">
+          <span class="badge badge-emerald">KYC Passed</span> full access
+        </div>
+      </div>
+
+      <div class="metric-card card-glow-amber">
+        <div class="metric-header">
+          <span class="metric-title">Pending KYC</span>
+          <div class="metric-icon-box amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value text-amber" id="stat-pending-users">0</div>
+        <div class="metric-footer text-muted">
+          <span class="badge badge-amber">Action Req.</span> limited limit
+        </div>
+      </div>
+
+      <div class="metric-card card-glow-purple">
+        <div class="metric-header">
+          <span class="metric-title">Total Spending Limit</span>
+          <div class="metric-icon-box purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value text-purple" id="stat-total-limit">₹0</div>
+        <div class="metric-footer text-muted">
+          <span>Active Liquidity Pool</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Section: Controls & Table -->
+    <main class="main-card">
+      <div class="controls-bar">
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="input-search" placeholder="Search by Wallet Address (0x...), User ID, or status..." autocomplete="off">
+          <button class="search-clear" id="btn-clear-search" style="display: none;">&times;</button>
+        </div>
+
+        <div class="filter-group">
+          <button class="filter-btn active" data-status="all">All (<span id="count-all">0</span>)</button>
+          <button class="filter-btn" data-status="verified">Verified (<span id="count-verified">0</span>)</button>
+          <button class="filter-btn" data-status="pending">Pending (<span id="count-pending">0</span>)</button>
+          <button class="filter-btn" data-status="rejected">Rejected (<span id="count-rejected">0</span>)</button>
+        </div>
+
+        <div class="tools-group">
+          <button class="btn btn-secondary btn-sm" id="btn-export-json" title="Export as JSON">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>JSON</span>
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btn-export-csv" title="Export as CSV">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table of Users & Wallets -->
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Wallet Account</th>
+              <th>User ID</th>
+              <th>KYC Status</th>
+              <th>Spending Limit</th>
+              <th>Registered At</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <tr>
+              <td colspan="6" class="loading-state">
+                <div class="spinner"></div>
+                <span>Fetching registered wallets...</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State View -->
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
+            <path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/>
+            <circle cx="18" cy="14" r="1"/>
+          </svg>
+        </div>
+        <h3>No Wallets Found</h3>
+        <p class="text-muted">No registered wallets match your active search or filter criteria.</p>
+        <button class="btn btn-secondary" id="btn-reset-filters">Reset Filters</button>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-left">
+        <span>CryPe Settlement Engine v1.0</span> • 
+        <span class="status-indicator-green">●</span> API Online
+      </div>
+      <div class="footer-right">
+        <span>Auto-syncing every 3 seconds</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal: User Details & Raw Data Inspector -->
+  <div class="modal-backdrop" id="modal-details">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge">User Profile</div>
+          <h2 id="modal-user-id-title">User Details</h2>
+        </div>
+        <button class="modal-close" id="btn-close-details">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">Full Wallet Address</span>
+            <div class="wallet-copy-box">
+              <code id="modal-wallet-address" class="mono">--</code>
+              <button class="btn-copy" id="btn-copy-modal-wallet" title="Copy Wallet Address">Copy</button>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Internal User ID</span>
+            <code id="modal-user-id" class="mono">--</code>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">KYC Status</span>
+            <span id="modal-kyc-badge" class="badge">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Spending Limit</span>
+            <span id="modal-spending-limit" class="text-bold">--</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Registration Timestamp</span>
+            <span id="modal-created-at" class="text-muted">--</span>
+          </div>
+        </div>
+
+        <div class="raw-json-section">
+          <div class="raw-json-header">
+            <span>Raw JSON Record</span>
+            <button class="btn btn-xs btn-secondary" id="btn-copy-raw-json">Copy JSON</button>
+          </div>
+          <pre><code id="modal-raw-json"></code></pre>
+        </div>
+
+        <div class="modal-actions-bar">
+          <button class="btn btn-emerald" id="btn-modal-verify">Verify KYC</button>
+          <button class="btn btn-danger" id="btn-modal-delete">Delete Record</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Register Test Wallet -->
+  <div class="modal-backdrop" id="modal-register">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge cyan">Test Tool</div>
+          <h2>Register Wallet</h2>
+        </div>
+        <button class="modal-close" id="btn-close-register">&times;</button>
+      </div>
+      <form id="form-register-wallet" class="modal-body">
+        <p class="text-muted text-sm" style="margin-bottom: 1.25rem;">
+          Simulate a client wallet connection (such as AppKit or OkHttp mobile app).
+        </p>
+
+        <div class="form-group">
+          <label for="reg-wallet-address">Wallet Address (0x...)</label>
+          <div class="input-with-button">
+            <input type="text" id="reg-wallet-address" placeholder="0x4c4cbff8c45e131ab8f2af5f04b3a162078727c7" required>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-gen-random-wallet">Random</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-chain-id">Chain ID</label>
+            <input type="text" id="reg-chain-id" value="eip155:1" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-method">Method / Provider</label>
+            <input type="text" id="reg-method" value="AppKit" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-initial-kyc">Initial KYC Level</label>
+          <select id="reg-initial-kyc">
+            <option value="pending">Pending</option>
+            <option value="verified">Verified (VIP)</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-register">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-register">Submit Registration</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

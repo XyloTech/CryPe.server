@@ -4,6 +4,30 @@ import userService from "../services/userService";
 const router = Router();
 const service = new userService();
 
+// Dashboard list endpoint: Returns all users + summary statistics
+router.get("/list", async (_req: Request, res: Response) => {
+  try {
+    const [users, stats] = await Promise.all([
+      service.getAllUsers(),
+      service.getDashboardStats(),
+    ]);
+    res.json({ users, stats });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Dashboard stats endpoint
+router.get("/stats", async (_req: Request, res: Response) => {
+  try {
+    const stats = await service.getDashboardStats();
+    res.json(stats);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Standard register
 router.post("/register", async (req: Request, res: Response) => {
   try {
     const { walletAddress, address } = req.body;
@@ -18,6 +42,7 @@ router.post("/register", async (req: Request, res: Response) => {
   }
 });
 
+// Wallet register compatibility endpoint
 router.post("/wallet/register", async (req: Request, res: Response) => {
   try {
     const { address, walletAddress, chainId, method, timestamp } = req.body;
@@ -44,6 +69,7 @@ router.post("/wallet/register", async (req: Request, res: Response) => {
   }
 });
 
+// KYC Verification
 router.post("/kyc/verify", async (req: Request, res: Response) => {
   try {
     const { userId, biometricData, documents } = req.body;
@@ -57,11 +83,39 @@ router.post("/kyc/verify", async (req: Request, res: Response) => {
   }
 });
 
+// Get user status
 router.get("/status/:userId", async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId as string;
     const status = await service.getUserStatus(userId);
     res.json(status);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user from Dashboard (KYC status, spending limit)
+router.patch("/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId as string;
+    const { kyc_level, kyc_status, spending_limit } = req.body;
+    const updated = await service.updateUser(userId, {
+      kyc_level,
+      kyc_status,
+      spending_limit,
+    });
+    res.json({ success: true, user: updated });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete user from Dashboard
+router.delete("/:userId", async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId as string;
+    const deleted = await service.deleteUser(userId);
+    res.json({ success: deleted });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
